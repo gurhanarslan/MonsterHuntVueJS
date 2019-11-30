@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+</head>
+
+<body>
+    <div class="container mt-3 border"  id="exercise">
+        <div class="row">
+            <div class="col-12 col-md-2"></div>
+            <div class="col-12 col-md-4 text-center text-danger mt-2">
+                <h2>USER</h2> <br>
+                <div class="border rounded w-100" style="height: 25px;">
+
+                    <div style="transition: all 0.5s linear;" class="bg-danger rounded text-white"
+                        :style="{width:playerHealth+'%'}">{{playerHealth}}%</div>
+                </div>
+
+            </div>
+            <div class="col-12 col-md-4 text-center text-warning mt-2">
+                <h2>MONSTER</h2> <br>
+                <div class="border rounded w-100" style="height: 25px;">
+                    <div style="transition: all 0.5s linear;" class="bg-warning rounded text-white"
+                        :style="{width:monsterHealth+'%'}">{{monsterHealth}}%</div>
+                </div>
+            </div>
+            <div class="col-12 col-md-2"></div>
+        </div>
+        <div class="border-primary">
+            <div class="row mt-3  text-center">
+                <div class="col-12 col-md-2"></div>
+                <div v-if="startGame"  class="col-12 col-md-8 mt-3 border rounded text-center ">
+                    <button @click="startGame=!startGame" class="btn btn-danger text-center"> New Game</button></div>
+                <div class="col-12 col-md-2"></div>
+            </div>
+        </div>
+        <div v-if="!startGame" class="row mt-3  text-center">
+
+            <div class="col-12 col-md-2"></div>
+            <div class="col-12 col-md-8 mt-3 border rounded text-center ">
+                <div class="text-primary">{{textMana}}</div>
+                <button @click="playerAttack" class="btn btn-secondary btn-sm mx-2 mt-2 text-center"> Attack!</button>
+                <button @click="specialAttack" class="btn btn-primary btn-sm mx-2 mt-2 text-center"> Special
+                    Attack!</button>
+                <button @click="healUp" class="btn btn-success btn-sm mx-2 mt-2 text-center"> Heal Up!</button>
+                <button @click="giveUp" class="btn btn-danger btn-sm mx-2 mt-2 text-center"> Give Up!</button>
+            </div>
+            <div class="col-12 col-md-2"></div>
+        </div>
+        <div :class="{ 'bg-danger' : item.name=='m' , 'bg-success' : item.name=='p'}" v-for="item in logs">{{item.text}}
+        </div>
+    </div>
+
+
+    <script>
+        new Vue({
+            el: "#exercise",
+            data: {
+                startGame: true,
+                playerHealth: 100,
+                monsterHealth: 100,
+                playerMana: 100,
+                textMana: "",
+                logs: []
+
+            },
+            methods: {
+                playerAttack: function () {
+                    if (this.playerMana >= 0) {
+
+                        var playerDamage = Math.floor(Math.random() * 15)
+                        this.montsterAttack(20)
+                        this.monsterHealth -= playerDamage;
+                        this.textMana = ""
+                        console.log(playerDamage)
+                        this.logs.push({
+                            name: 'p',
+                            text: 'Saldırdın Vurduğun Damage :'+playerDamage+''
+                        })
+                    } else {
+                        
+                        this.textMana.push({
+                            name:'mana',
+                            text:'Mana Yetersiz. Canavar Sana Saldırdı! :'+monsterDamage+''
+                        })
+                    }
+                },
+                montsterAttack: function (value) {
+                    var monsterDamage = Math.floor(Math.random() * value)
+                    this.playerHealth -= monsterDamage
+                    this.logs.push({
+                        name: 'm',
+                        text: 'Canavar Saldırdı! Vurduğu Damage :'+monsterDamage+''
+                    })
+                },
+                specialAttack: function () {
+                    if (this.playerMana >= 0) {
+                        var playerDamage = Math.floor(Math.random() * 20)
+                        this.montsterAttack(20)
+                        this.logs.push({
+                            name: 'p',
+                            text: 'Saldırdın Vurduğun Damage :'+playerDamage+''
+                        })
+                        this.monsterHealth -= playerDamage;
+                        this.textMana = ""
+                    } else {
+                        this.montsterAttack(10)
+                        this.textMana.push({
+                            
+                            name:'mana',
+                            text:'Mana Yetersiz. Canavar Sana Saldırdı! :'+monsterDamage+''
+                        })
+                    }
+                },
+                healUp: function () {
+                    var heal = Math.floor(Math.random() * 25)
+                    if (this.playerHealth >= 90) {
+                        this.playerHealth = 100
+                       
+                    } else {
+                        this.playerHealth += heal
+
+
+                    }
+                },
+                giveUp: function () {
+                    alert("Looser")
+                    this.playerHealth = 100
+                    this.monsterHealth = 100
+                    this.startGame = !this.startGame
+                },
+
+
+
+            },
+            watch: {
+                playerHealth: function () {
+                    if (this.playerHealth <= 0) {
+                        alert("Kaybettin")
+                        this.playerHealth = 100
+                        this.monsterHealth = 100
+                    }
+                },
+                monsterHealth: function () {
+                    if (this.monsterHealth <= 0) {
+                        alert("Kazandın!")
+                        this.playerHealth = 100,
+                            this.monsterHealth = 100
+                    }
+                },
+
+            }
+        })
+    </script>
+</body>
+
+</html>
